@@ -34,7 +34,7 @@ app.use('/', main);
 app.use('/users', users);
 
 app.post('/auth', (req, res) =>{
-   console.dir(req.body.mode);
+   console.dir(req.body.mode == "Sign In");
    if(req.body.mode == "Sign In"){
      db.getClient().query('SELECT id FROM users WHERE email = $1 AND hash = $2', [req.body.email, req.body.password], (err, response) => {
        if(response.rows[0]){
