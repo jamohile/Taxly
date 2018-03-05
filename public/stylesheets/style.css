@@ -1,0 +1,171 @@
+:root{
+  --green: #77D353;
+  --red: #F95F62;
+  --blue: #00A6FF;
+  --semi_transparent: rgba(20,20,20,0.2);
+  --dark_semi_transparent: rgba(20,20,20,0.6);
+}
+
+body {
+  padding: 50px;
+  font: 16px "Lato", Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  color: white;
+  text-align: center;
+}
+
+a {
+  color: #00B7FF;
+}
+h1{
+  font-family: Lato;
+  font-weight: 900;
+  color: var(--semi_transparent);
+}
+h2{
+  font-family: Lato;
+  font-weight: 900;
+  color: gray;
+}
+
+.income{
+  background: var(--green);
+}
+.expense{
+  background: var(--red);
+}
+.item{
+  font-family: Lato;
+  font-weight: 900;
+  padding: 8px;
+  margin: 8px;
+  color: white;
+  text-align: center;
+  font-size: xx-large;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.item:hover{
+  box-shadow: 0px 2px 0px 1px var(--semi_transparent);
+  transform: scale(1.01);
+}
+.item > label {
+  font-size: medium;
+  display: block;
+  width: 100%;
+  color: var(--semi_transparent);
+}
+
+#button_add{
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+
+  text-align: center;
+  line-height: 36px;
+
+  font-size: xx-large;
+  color: white;
+
+  background: var(--blue);
+  border: none;
+  margin: 8px;
+
+  transition: all 0.4s ease-in-out;
+}
+#button_add:hover{
+  box-shadow: 1px 0px 0px 1px var(--semi_transparent);
+  transform: rotateZ(90deg);
+}
+
+#total{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  margin-right: 8px;
+  font-size: 150%;
+}
+
+.hidden{
+  display: none;
+}
+.bottom-menu{
+  height: 50%;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: var(--blue);
+
+  font-family: Lato;
+  font-weight: 700;
+  line-height: 24px;
+  color: white;
+
+  animation: bottom-menu 0.2s forwards ease-in-out;
+}
+@keyframes bottom-menu {
+  0%{
+    bottom: -50%;
+  }
+  100%{
+    bottom: 0%;
+  }
+}
+
+.incrementable {
+  display: inline-block;
+}
+.incrementable  *{
+  display: inline-block;
+}
+.incrementable .option{
+  font-family: Lato;
+  font-weight: 900;
+  font-size: x-large;
+  user-select: none;
+  padding: 8px;
+  color:var(--blue);
+}
+
+form{
+  margin: 8px;
+  color: var(--dark_semi_transparent);
+}
+form input[type=text], form input[type=password]{
+  width: 90%;
+  background: var(--semi_transparent);
+}
+input[type=text], input[type=password]{
+  background: none;
+  color: var(--dark_semi_transparent);
+  border: none;
+  text-align: center;
+  font-family: Lato;
+  font-weight: 900;
+
+  padding: 8px;
+  font-size: x-large;
+  margin: 8px;
+}
+input[type=submit]{
+  outline: none;
+  background: var(--blue);
+  border: none;
+  color: white;
+  padding: 8px;
+  margin: 8px;
+  width: 90%;
+  font-family: Lato;
+  font-weight: 900;
+}
+input[type=submit]:hover{
+  transform: scale(1.01);
+}
+.input_alternate{
+  background: var(--dark_semi_transparent) !important;
+  color: white;
+}

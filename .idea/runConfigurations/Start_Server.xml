@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Start Server" type="NodeJSConfigurationType" factoryName="Node.js" path-to-js-file="bin/www" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="DEBUG" value="API:*" />
+      <env name="PGUSER" value="yuwpnxdspujpih" />
+      <env name="PGHOST" value="ec2-54-243-239-66.compute-1.amazonaws.com" />
+      <env name="PGPASSWORD" value="a19b4865197ac1a53211d907b1e352f8b4f9767ab7f9e318bcc74162b9906d6f" />
+      <env name="PGDATABASE" value="d8lqg61rbcbp3n" />
+      <env name="PGPORT" value="5432" />
+      <env name="DB_CONN_STRING" value="postgresql://ec2-54-243-239-66.compute-1.amazonaws.com:5432/d8lqg61rbcbp3n?sslmode=require" />
+    </envs>
+    <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSStartBrowserRunConfigurationExtension">
+      <browser url="http://localhost:3000/" />
+    </EXTENSION>
+    <method />
+  </configuration>
+</component>

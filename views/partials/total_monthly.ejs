@@ -1,0 +1,8 @@
+<% var sum = 0 %>
+<% for(var i = 0; i < items.length; i++){ %>
+<% var val = parseFloat(items[i].value.replace(/[^0-9\.-]+/g, "")) %>
+<% sum += (items[i].expense) ? 0-val : val %>
+<% } %>
+<div id = "total" class="<%= (sum > 0) ? "income" : "expense" %>">
+    <%= sum %>
+</div>

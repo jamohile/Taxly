@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>Taxly</title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link href="https://fonts.googleapis.com/css?family=Lato:700,900" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <h1>Taxly</h1>
+    <h2>Welcome</h2>
+
+    <%if(failed){%>
+        <div>Sorry, that is incorrect.</div>
+    <%}%>
+
+    <form action="/auth" method="post" enctype="application/x-www-form-urlencoded">
+        <input placeholder="Email" name = "email" type="text">
+        <input placeholder="Password" name="password" type="password">
+        <input name = "mode" value="Sign In" type="submit">
+        <input name = "mode" value="Sign Up" type="submit">
+    </form>
+</body>
+</html>

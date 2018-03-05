@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Taxly</title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link href="https://fonts.googleapis.com/css?family=Lato:700,900" rel="stylesheet">
+
+    <script> var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+            'August', 'September', 'October', 'November', 'December']</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+<h1>Taxly</h1>
+<div id="selector_year" class="incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= date.getFullYear() %></h2>
+    <div class="option next">></div>
+</div>
+<div id="selector_month" class="incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= date.toLocaleString("en-us", {month: "long"}) %></h2>
+    <div class="option next">></div>
+</div>
+<div id="items">
+    <%- include('./partials/item_values', {items: items}); %>
+</div>
+<%- include('./partials/button_add'); %>
+
+<%- include('./partials/total_monthly', {items: items}); %>
+
+<div id="bottom-menu_add_item" class="hidden bottom-menu">
+    <div class="content">
+        Add Item
+        <form id="form_add_item">
+            Name<br>
+            <input name="name" type="text">
+            <br>
+            Expense<br>
+            <input name="expense" type="checkbox"><br>
+            <input class="input_alternate" type="submit" value="Add">
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script>
+    $().ready(() => {
+        $('#button_add').click((event) => {
+            event.stopPropagation();
+            $('#bottom-menu_add_item').removeClass('hidden');
+        });
+        $('#bottom-menu_add_item').click((event) => {
+            event.stopPropagation();
+        });
+        $('body').click(() => {
+            console.dir(getMonthIndex());
+            $('#bottom-menu_add_item').addClass('hidden');
+        });
+
+        //Handlers for changing month and year.
+
+        $('#selector_year .option.previous').click((event) => {
+            event.stopPropagation();
+            setYear(getYear() - 1);
+            fetch();
+        });
+        $('#selector_year .option.next').click((event) => {
+            event.stopPropagation();
+            setYear(parseInt(getYear()) + 1);
+            fetch();
+        });
+        $('#selector_month .option.previous').click((event) => {
+            event.stopPropagation();
+            var monthIndex = parseInt(getMonthIndex()) - 1;
+            //handle wrap
+            if (monthIndex < 0) {
+                monthIndex = 11;
+            }
+            setMonthByIndex(monthIndex);
+            fetch();
+        });
+        $('#selector_month .option.next').click((event) => {
+            event.stopPropagation();
+            var monthIndex = parseInt(getMonthIndex()) + 1;
+            //handle wrap
+            if (monthIndex > 11) {
+                monthIndex = 0;
+            }
+            setMonthByIndex(monthIndex);
+            fetch();
+        });
+
+        //Handlers for adding a new item.
+        $('#form_add_item').submit((event) => {
+            event.preventDefault();
+            var queryString = `?month=${getMonthIndex()}&year=${getYear()}`
+            $.post('1/items' + queryString, $('#form_add_item').serialize(), (response) => {
+                $('#items').append(response);
+                $('#bottom-menu_add_item').addClass('hidden');
+            });
+        });
+
+        //Handlers for updating items.
+        $('#items').on('submit', '.item form', handleItemUpdate);
+        $('#items').on('submit', '.item-expense form', handleItemUpdate);
+
+
+        $('#items').on('click', '.item', handleItemClick);
+        $('#items').on('click', '.item-expense', handleItemClick);
+        $('#items').on('click', '.item form', (event) => {
+            event.stopPropagation();
+        });
+        $('#items').on('click', '.item-expense form', (event) => {
+            event.stopPropagation();
+        })
+
+
+    })
+    ;
+
+    function handleItemClick(event) {
+        $(this).find('form').slideToggle();
+    }
+
+    function handleItemUpdate(event) {
+        event.preventDefault();
+        $.post($(this).attr('action'), $(this).serialize(), (response) => {
+            $(this).parent().replaceWith(response);
+        });
+
+    }
+
+    function getMonthIndex() {
+        return MONTHS.indexOf(getMonth());
+    }
+
+    function getMonth() {
+        return $('#selector_month #value').text();
+    }
+
+    function getYear() {
+        return $('#selector_year #value').text();
+    }
+
+    function setMonthByIndex(monthIndex) {
+        setMonth(MONTHS[monthIndex]);
+    }
+
+    function setMonth(month) {
+        $('#selector_month #value').text(month)
+    }
+
+    function setYear(year) {
+        $('#selector_year #value').text(year)
+    }
+
+    //Use the set month and year to get data from server, set.
+    function fetch() {
+        var items = $('#items');
+        var queryString = `?month=${getMonthIndex()}&year=${getYear()}`;
+        $.get('1/items/item' + queryString, {}, (response) => {
+            items.html(response);
+        });
+
+    }
+</script>
