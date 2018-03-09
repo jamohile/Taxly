@@ -60,17 +60,17 @@ app.get('/app', verify.HAS_VALID_USER, (req, res) => {
     var date = new Date();
     var userID = req.user.id;
     db.getClient().query('SELECT * FROM items_protos WHERE month = $1 and year = $2 and user_id = $3', [date.getMonth(), date.getFullYear(), userID], (err, response) => {
-        res.render('main', {date: date, items: response.rows})
+        res.render('main', {date: date, items: response.rows});
     });
-})
+});
 
 app.post('/auth', (req, res) => {
-    if (req.body.mode == "Sign In") {
+    if (req.body.mode == 'Sign In') {
         db.getClient().query('SELECT id FROM users WHERE email = $1 AND hash = $2', [req.body.email, req.body.password], (err, response) => {
             if (response.rows[0]) {
                 sendToken(res, response.rows[0].id);
             } else {
-                res.render('auth', {failed: true, message: "Sorry, that's incorrect"})
+                res.render('auth', {failed: true, message: 'Sorry, that\'s incorrect'});
             }
         });
     } else {
@@ -78,7 +78,7 @@ app.post('/auth', (req, res) => {
             if (!err) {
                 if (response.rows.length != 0) {
                     console.dir('here');
-                    res.render('auth', {failed: true, message: "Sorry, an account with that email address exists."})
+                    res.render('auth', {failed: true, message: 'Sorry, an account with that email address exists.'});
                 } else {
                     db.getClient().query('INSERT INTO users(email, hash) VALUES($1, $2) RETURNING id', [req.body.email, req.body.password], (err, response) => {
                         if (!err) {
@@ -95,8 +95,12 @@ app.post('/auth', (req, res) => {
                 console.dir(err);
                 res.sendStatus(500);
             }
-        })
+        });
     }
+});
+app.post('/auth/logout', (req, res) => {
+   res.clearCookie('auth');
+   res.redirect('/');
 });
 
 function sendToken(res, id) {
