@@ -7,18 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <h1>Taxly</h1>
-    <h2>Welcome</h2>
+<h1>Taxly</h1>
+<h2>Welcome</h2>
 
-    <%if(failed){%>
-        <div class="failed"><%=message%></div>
-    <%}%>
+<% if(failed){ %>
+<div class="failed"><%= message %></div>
+<% } %>
 
-    <form action="/auth" method="post" enctype="application/x-www-form-urlencoded">
-        <input placeholder="Email" name = "email" type="text">
-        <input placeholder="Password" name="password" type="password">
-        <input name = "mode" value="Sign In" type="submit">
-        <input name = "mode" value="Sign Up" type="submit">
-    </form>
+<form action="/auth" method="post" enctype="application/x-www-form-urlencoded">
+    <input placeholder="Email" name="email" type="text">
+    <input placeholder="Password" name="password" type="password">
+    <input name="mode" value="Sign In" type="submit">
+    <input name="mode" value="Sign Up" type="submit">
+</form>
+<%- include('partials/footer', {}); %>
 </body>
 </html>

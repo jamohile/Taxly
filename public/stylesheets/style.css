@@ -28,6 +28,7 @@ h2 {
     font-family: Lato;
     font-weight: 900;
     color: gray;
+    transition: all 0.2s;
 }
 
 .income {
@@ -248,4 +249,8 @@ header{
     position: relative;
     display: flex;
     text-align: center;
+}
+
+footer{
+    color: var(--semi_transparent);
 }
