@@ -204,6 +204,9 @@ input[type=submit] {
     font-family: Lato;
     font-weight: 900;
 
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+
     max-width: 200px;
     transition: all 0.2s;
 }
