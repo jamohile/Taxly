@@ -17,8 +17,9 @@ GET all items for a given month and year.
 Accepts query params: month (0 based) and year (1 based)
  */
 router.get('/', (req, res) => {
-    var month = req.query.month;
-    var year = req.query.year;
+    var date = new Date();
+    var month = req.query.month ? req.query.month : date.getMonth();
+    var year = req.query.year ? req.query.year : date.getFullYear();
     var userID = req.user.id;
     console.dir(userID);
     // Join Item with properties from the proto.
@@ -38,11 +39,11 @@ router.get('/', (req, res) => {
                     } else {
                         console.dir(response.rows);
                         if (response.rows.length > 0) {
-                            for (let row in response.rows) {
-                                items.push(row.to_json);
+                            for (var i = 0; i < response.rows.length; i++) {
+                                items.push(response.rows[i].to_json);
                             }
                         }
-                        console.dir(req.user.id);
+                        console.dir(items);
                         res.render('partials/item_values', {items: items});
                     }
                 });
@@ -108,9 +109,9 @@ router.post('/item/:itemID/delete', (req, res) => {
     var userID = req.user.id;
     db.getClient().query('DELETE from items where id = $1 AND id in (SELECT id from items_protos WHERE id = $1 AND user_id = $2)', [itemID, userID], (err, response) => {
         if (!err) {
-            if(!err){
+            if (!err) {
                 res.sendStatus(200);
-            }else{
+            } else {
                 res.sendStatus(500);
                 console.error(err);
             }
@@ -145,9 +146,10 @@ Returns the id of the newly created item.
 
  */
 router.post('/', (req, res) => {
+    console.dir(console.dir(req.body));
     var itemName = req.body.name;
     var itemExpense = (req.body.expense == true | req.body.expense == 'on') ? true : false;
-    var itemDefault = req.body.default ? req.body.default | req.body.default == 'on' : false;
+    var itemDefault = req.body.default ? req.body.default | req.body.default == 'true' : false;
     var userID = req.user.id;
 
     var month = req.query.month;
@@ -175,7 +177,14 @@ router.post('/', (req, res) => {
                     }
                 });
             } else {
-
+                db.getClient().query(`SELECT * from item_protos WHERE id = ${proto_response.rows[0].id}`, [], (err, response) => {
+                    if (!err) {
+                        res.render('partials/item_proto', {item: response.rows[0]});
+                    } else {
+                        console.error(err);
+                        res.sendStatus(500);
+                    }
+                });
             }
         } else {
             res.sendStatus(500);
@@ -188,7 +197,36 @@ router.post('/', (req, res) => {
 POST to update a specific item prototype.
  */
 router.post('/:itemID', (req, res) => {
+    var itemName = req.body.name;
+    var itemDefault = true;
+    var itemID = req.params.itemID;
+    var userID = req.user.id;
 
+    db.getClient().query('UPDATE item_protos SET name = $1, "default" = $2 WHERE id = $3 and id in (SELECT id from item_protos WHERE user_id = $4) RETURNING *', [itemName, itemDefault, itemID, userID], (err, response) => {
+        if (!err) {
+            res.render('partials/item_proto', {item: response.rows[0]});
+        } else {
+            res.sendStatus(500);
+            console.error(err);
+        }
+    })
+});
+router.post('/:itemID/delete', (req, res) => {
+    var itemID = req.params.itemID;
+    var userID = req.user.id;
+
+    db.getClient().query('DELETE from item_protos WHERE id = $1 and id in (SELECT id from item_protos WHERE user_id = $2) RETURNING id', [itemID, userID], (err, response) => {
+        if (!err) {
+            if (response.rows.length != 0) {
+                res.sendStatus(200);
+            } else {
+                res.sendStatus(309);
+            }
+        } else {
+            res.sendStatus(500);
+            console.error(err);
+        }
+    })
 });
 
 module.exports = router;

@@ -38,16 +38,29 @@ h2 {
     background: var(--red);
 }
 
+#defaults{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#items{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .item {
     font-family: Lato;
     font-weight: 900;
     padding: 8px;
+    height: fit-content;
     margin: 8px;
     color: white;
     text-align: center;
     font-size: xx-large;
     border-radius: 8px;
     transition: all 0.2s ease-in-out;
+    flex-basis: 280px;
 }
 
 .item:hover {
@@ -93,6 +106,8 @@ h2 {
     padding: 8px;
     margin-right: 8px;
     font-size: 150%;
+
+    box-shadow: 0 -1px var(--semi_transparent);
 }
 
 .hidden {
@@ -100,7 +115,6 @@ h2 {
 }
 
 .bottom-menu {
-    height: 50%;
     width: 100%;
     position: fixed;
     bottom: 0;
@@ -111,8 +125,12 @@ h2 {
     font-weight: 700;
     line-height: 24px;
     color: white;
+    box-shadow: 0px -1px var(--semi_transparent);
 
-    animation: bottom-menu 0.2s forwards ease-in-out;
+}
+.bottom-menu .content{
+    padding: 8px;
+    font-weight: 900;
 }
 
 @keyframes bottom-menu {
@@ -185,10 +203,13 @@ input[type=submit] {
     width: 90%;
     font-family: Lato;
     font-weight: 900;
+
+    max-width: 200px;
+    transition: all 0.2s;
 }
 
 input[type=submit]:hover {
-    transform: scale(1.01);
+    transform: scale(1.05);
 }
 
 .input_alternate {
@@ -204,4 +225,24 @@ input[type=submit]:hover {
 #loading{
     color: var(--semi_transparent);
     display: none;
+}
+.inline{
+    display: inline-block;
+}
+.no_underline{
+    text-decoration: none;
+}
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+::placeholder{
+    opacity: 1;
+    color: var(--semi_transparent);
+}
+.link{
+    position: relative;
+    display: flex;
+    text-align: center;
 }

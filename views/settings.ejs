@@ -1,0 +1,83 @@
+<html>
+<%- include('partials/head', {}); %>
+
+<body>
+<%- include('partials/header', {}); %>
+<h2>
+    Defaults
+</h2>
+
+<div id="defaults">
+    <% for(var i = 0; i < protos.length; i++){ %>
+    <% console.dir(protos[i].name); %>
+    <%- include('partials/item_proto', {item: protos[i]}); %>
+    <% } %>
+</div>
+<%- include('./partials/button_add'); %>
+<br>
+<br>
+
+<form id="logout" action="/auth/logout" method="post">
+    <input type=submit class="input_alternate" value="Logout">
+</form>
+
+<div id="bottom-menu_add_item" class="hidden bottom-menu">
+    <div class="content">
+        Add Default Item
+        <form action="/items" method="post" id="form_add_item">
+            Name<br>
+            <input name="name" type="text">
+            <br>
+            Expense<br>
+            <input name="expense" type="checkbox"><br>
+            <input class="input_alternate" type="submit" value="Add">
+        </form>
+    </div>
+</div>
+
+</body>
+<script>
+    $().ready(() => {
+        $('#defaults').on('submit', '.item.proto form.update', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            var form = $(event.target);
+            $.post(form.attr('action'), form.serialize())
+                .done((response) => {
+                    form.parent().replaceWith(response);
+                });
+        });
+        $('#defaults').on('submit', '.item.proto form.delete', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            var form = $(event.target);
+            $.post(form.attr('action'), form.serialize())
+                .done((response) => {
+                    form.parent().remove();
+                });
+        });
+
+        //Add
+
+        $('#button_add').click((event) => {
+            event.stopPropagation();
+            $('#bottom-menu_add_item').slideToggle();
+        });
+        $('#bottom-menu_add_item').click((event) => {
+            event.stopPropagation();
+        });
+        $('body').click(() => {
+            $('#bottom-menu_add_item').slideUp();
+        });
+        $('#bottom-menu_add_item').submit((event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            $.post($(event.target).attr('action'), $(event.target).serialize() + '&default=true', (response) => {
+                $('#defaults').append(response);
+                $('#bottom-menu_add_item').slideUp();
+            });
+        });
+    });
+</script>
+
+</html>

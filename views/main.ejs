@@ -1,21 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Taxly</title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <link href="https://fonts.googleapis.com/css?family=Lato:700,900" rel="stylesheet">
 
-    <script> var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-            'August', 'September', 'October', 'November', 'December']</script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
+<%- include('./partials/head', {}); %>
 
 <body>
-<form id = "logout" action="/auth/logout" method="post">
-    <input type = submit class = "input_alternate"  value="Logout">
-</form>
-<h1>Taxly</h1>
+<%- include('./partials/header', {}); %>
 <div id="selector_year" class="incrementable">
     <div class="option previous"><</div>
     <h2 id="value"><%= date.getFullYear() %></h2>
@@ -28,7 +17,6 @@
 </div>
 <div id="loading">Loading...</div>
 <div id="items">
-    <%- include('./partials/item_values', {items: items}); %>
 </div>
 <%- include('./partials/button_add'); %>
 
@@ -53,16 +41,24 @@
 
 <script>
     $().ready(() => {
+        /*
+        Set starting date and fetch.
+         */
+
+        var date = new Date();
+        setMonthByIndex(date.getMonth());
+        setYear(date.getFullYear());
+        fetch();
+
         $('#button_add').click((event) => {
             event.stopPropagation();
-            $('#bottom-menu_add_item').removeClass('hidden');
+            $('#bottom-menu_add_item').slideToggle();
         });
         $('#bottom-menu_add_item').click((event) => {
             event.stopPropagation();
         });
         $('body').click(() => {
-            console.dir(getMonthIndex());
-            $('#bottom-menu_add_item').addClass('hidden');
+            $('#bottom-menu_add_item').slideUp();
         });
 
         //Handlers for changing month and year.
@@ -105,7 +101,7 @@
             $.post('items' + queryString, $('#form_add_item').serialize())
                 .then((response) => {
                     $('#items').append(response);
-                    $('#bottom-menu_add_item').addClass('hidden');
+                    $('#bottom-menu_add_item').slideUp();
                 })
                 .fail((xhr) => {
                     if (xhr.status == 309) {
@@ -133,13 +129,14 @@
         $(this).find('form').slideToggle();
     }
 
-    function handleItemDelete(event){
+    function handleItemDelete(event) {
         event.preventDefault();
         $.post($(this).attr('action'), {})
             .done((response) => {
                 $(this).parent().remove();
             });
     }
+
     function handleItemUpdate(event) {
         event.preventDefault();
         $.post($(this).attr('action'), $(this).serialize())
