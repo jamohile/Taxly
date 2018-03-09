@@ -109,7 +109,9 @@
                     }
                 })
         });
-
+        $('#items').on('click', '.item a', (event) => {
+           event.stopPropagation();
+        });
         //Handlers for updating / deleting items.
         $('#items').on('submit', '.item form.update', handleItemUpdate);
 
@@ -126,7 +128,7 @@
     ;
 
     function handleItemClick(event) {
-        $(this).find('form').slideToggle();
+        $(this).find('.hidden').slideToggle();
     }
 
     function handleItemDelete(event) {
@@ -134,6 +136,7 @@
         $.post($(this).attr('action'), {})
             .done((response) => {
                 $(this).parent().remove();
+                updateTotal();
             });
     }
 

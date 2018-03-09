@@ -1,11 +1,13 @@
-<div class= "<%= (item.expense ? 'item expense' : "item income") %>">
+<% var url = '/items/item/' + item.id %>
+<div class="<%= (item.expense ? 'item expense' : "item income") %>">
+    <a href=<%= url + "/history"%> style="color:white" class="no_underline material-icons">history</a>
     <label><%= item.name %></label>
     <%= item.value %>
-    <form  class="hidden update" action=<%= '/items/item/' + item.id %>>
-        <input name="value" type="text" value=<%=item.value%> >
-        <input value="Save"type="submit">
+    <form class="hidden update" action=<%= url %>>
+        <input name="value" type="text" value=<%= item.value %>>
+        <input value="Save" type="submit">
     </form>
-    <form class="hidden delete" method="post" action=<%= '/items/item/' + item.id + '/delete'%>>
-        <input value="Delete"type="submit">
+    <form class="hidden delete" method="post" action=<%= '/items/item/' + item.id + '/delete' %>>
+        <input value="Delete" type="submit">
     </form>
 </div>

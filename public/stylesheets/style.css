@@ -257,3 +257,14 @@ header{
 footer{
     color: var(--semi_transparent);
 }
+
+table{
+    width: 100%;
+    font-weight: 900;
+    color: var(--semi_transparent);
+}
+td{
+    color: white;
+    text-align: center;
+    font-weight: 900;
+}

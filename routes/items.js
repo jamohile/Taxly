@@ -83,6 +83,25 @@ router.get('/item/:itemID', (req, res) => {
     });
 });
 
+router.get('/item/:itemID/history', (req, res) => {
+    var itemID = req.params.itemID;
+    db.getClient().query('SELECT * from items_protos WHERE id = $1', [itemID], (err, item_response) => {
+        if (err) {
+            res.sendStatus(500);
+            console.error(err);
+        } else {
+            db.getClient().query('SELECT * from item_history WHERE item_id = $1 ORDER BY date DESC', [itemID], (err, history_response) => {
+                if (err) {
+                    res.sendStatus(500);
+                    console.error(err);
+                } else {
+                    res.render('history', {item: item_response.rows[0], history: history_response.rows})
+                }
+            });
+        }
+    });
+});
+
 
 /*
 POST to a specific item, updating item.
@@ -96,6 +115,11 @@ router.post('/item/:itemID', (req, res) => {
             db.getClient().query('SELECT * from items_protos WHERE id = $1', [itemID], (err, response) => {
                 if (!err) {
                     res.render('partials/item_value', {item: response.rows[0]})
+                }
+            });
+            db.getClient().query('INSERT INTO item_history(type, value, item_id) VALUES($1, $2, $3)', ["SET", value, itemID], (err, response) => {
+                if (err) {
+                    console.error(err);
                 }
             });
         }
