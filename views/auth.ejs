@@ -11,7 +11,7 @@
     <h2>Welcome</h2>
 
     <%if(failed){%>
-        <div>Sorry, that is incorrect.</div>
+        <div class="failed"><%=message%></div>
     <%}%>
 
     <form action="/auth" method="post" enctype="application/x-www-form-urlencoded">

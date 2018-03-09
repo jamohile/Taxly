@@ -1,48 +1,26 @@
 var express = require('express');
 var router = express.Router({mergeParams: true});
 
+
+var verify = require('../utils/verify');
 var db = require('../utils/db');
 
 var app = require('../app');
 
 /*
-GET all item prototypes for the user. Returns formatted HTML
- */
-router.get('/', (req, res) => {
-    var userID = req.params.userID;
-    res.send('Hello World');
-    db.query('SELECT * from items WHERE user_id = $1', [userID], (err, response) => {
-        res.json(response);
-    });
-});
-
 /*
-GET specific item, NOT A PROTOTYPE. Returns HTML.
- */
-router.get('/item/:itemID', (req, res) => {
-    var itemID = req.params.itemID;
-    var userID = req.params.userID;
-
-    db.getClient().query('SELECT * from items_protos WHERE items.id = $1 AND ip.user_id = $2', [itemID, userID], (err, response) => {
-        if (err) {
-            console.dir(err);
-            res.sendStatus(500);
-        } else {
-            res.render('partials/item_value', {item: response.rows[0]});
-        }
-    });
-});
-
+GET all item prototypes for the user. Returns formatted HTML
+*/
 /*
 GET all items for a given month and year.
 
 Accepts query params: month (0 based) and year (1 based)
  */
-router.get('/item', (req, res) => {
+router.get('/', (req, res) => {
     var month = req.query.month;
     var year = req.query.year;
-    var userID = req.params.userID;
-
+    var userID = req.user.id;
+    console.dir(userID);
     // Join Item with properties from the proto.
     db.getClient().query('select * from items_protos WHERE month = $1 and year = $2 and user_id = $3', [month, year, userID], (err, response) => {
             if (err) {
@@ -54,16 +32,17 @@ router.get('/item', (req, res) => {
                  */
                 var items = response.rows;
                 db.getClient().query('SELECT to_json(addDefaultItems($1, $2, $3))', [userID, month, year], (err, response) => {
-                    if(err){
+                    if (err) {
                         console.dir(err);
                         res.sendStatus(500);
-                    }else{
-                        console.dir(response.rows)
+                    } else {
+                        console.dir(response.rows);
                         if (response.rows.length > 0) {
                             for (let row in response.rows) {
                                 items.push(row.to_json);
                             }
                         }
+                        console.dir(req.user.id);
                         res.render('partials/item_values', {items: items});
                     }
                 });
@@ -71,6 +50,38 @@ router.get('/item', (req, res) => {
         }
     );
 });
+router.get('/total', (req, res) => {
+    console.dir('here');
+    var month = req.query.month;
+    var year = req.query.year;
+    var userID = req.user.id;
+    db.getClient().query('SELECT value, expense from items_protos where user_id = $1 and month = $2 and year = $3', [userID, month, year], (err, response) => {
+        if (!err) {
+            res.render('partials/total_monthly', {items: response.rows})
+        } else {
+            console.dir(err);
+        }
+    })
+});
+
+
+/*
+GET specific item, NOT A PROTOTYPE. Returns HTML.
+*/
+router.get('/item/:itemID', (req, res) => {
+    var itemID = req.params.itemID;
+    var userID = req.user.id;
+
+    db.getClient().query('SELECT * from items_protos WHERE items.id = $1 AND ip.user_id = $2', [itemID, userID], (err, response) => {
+        if (err) {
+            console.dir(err);
+            res.sendStatus(500);
+        } else {
+            res.render('partials/item_value', {item: response.rows[0]});
+        }
+    });
+});
+
 
 /*
 POST to a specific item, updating item.
@@ -78,17 +89,34 @@ POST to a specific item, updating item.
 router.post('/item/:itemID', (req, res) => {
     var itemID = req.params.itemID;
     var value = req.body.value;
-
+    console.dir(req.cookies);
     db.getClient().query('UPDATE items SET value = $1 where id = $2', [value, itemID], (err, response) => {
-       if(!err){
-           db.getClient().query('SELECT * from items_protos WHERE id = $1', [itemID], (err, response) => {
-              if(!err){
-                res.render('partials/item_value', {item: response.rows[0]})
-              }
-           });
-       }
+        if (!err) {
+            db.getClient().query('SELECT * from items_protos WHERE id = $1', [itemID], (err, response) => {
+                if (!err) {
+                    res.render('partials/item_value', {item: response.rows[0]})
+                }
+            });
+        }
     });
 });
+/*
+DELETE a specific item
+ */
+router.post('/item/:itemID/delete', (req, res) => {
+    var itemID = req.params.itemID;
+    var userID = req.user.id;
+    db.getClient().query('DELETE from items where id = $1 AND id in (SELECT id from items_protos WHERE id = $1 AND user_id = $2)', [itemID, userID], (err, response) => {
+        if (!err) {
+            if(!err){
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(500);
+                console.error(err);
+            }
+        }
+    });
+})
 
 /*
 GET a specific item prototype. Returns the item in HTML.
@@ -120,7 +148,7 @@ router.post('/', (req, res) => {
     var itemName = req.body.name;
     var itemExpense = (req.body.expense == true | req.body.expense == 'on') ? true : false;
     var itemDefault = req.body.default ? req.body.default | req.body.default == 'on' : false;
-    var userID = req.params.userID;
+    var userID = req.user.id;
 
     var month = req.query.month;
     var year = req.query.year;

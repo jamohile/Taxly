@@ -23,6 +23,7 @@
     <h2 id="value"><%= date.toLocaleString("en-us", {month: "long"}) %></h2>
     <div class="option next">></div>
 </div>
+<div id="loading">Loading...</div>
 <div id="items">
     <%- include('./partials/item_values', {items: items}); %>
 </div>
@@ -98,25 +99,28 @@
         $('#form_add_item').submit((event) => {
             event.preventDefault();
             var queryString = `?month=${getMonthIndex()}&year=${getYear()}`
-            $.post('1/items' + queryString, $('#form_add_item').serialize(), (response) => {
-                $('#items').append(response);
-                $('#bottom-menu_add_item').addClass('hidden');
-            });
+            $.post('items' + queryString, $('#form_add_item').serialize())
+                .then((response) => {
+                    $('#items').append(response);
+                    $('#bottom-menu_add_item').addClass('hidden');
+                })
+                .fail((xhr) => {
+                    if (xhr.status == 309) {
+                        window.location.replace('/');
+                    }
+                })
         });
 
-        //Handlers for updating items.
-        $('#items').on('submit', '.item form', handleItemUpdate);
-        $('#items').on('submit', '.item-expense form', handleItemUpdate);
+        //Handlers for updating / deleting items.
+        $('#items').on('submit', '.item form.update', handleItemUpdate);
+
+        $('#items').on('submit', '.item form.delete', handleItemDelete);
 
 
         $('#items').on('click', '.item', handleItemClick);
-        $('#items').on('click', '.item-expense', handleItemClick);
         $('#items').on('click', '.item form', (event) => {
             event.stopPropagation();
         });
-        $('#items').on('click', '.item-expense form', (event) => {
-            event.stopPropagation();
-        })
 
 
     })
@@ -126,11 +130,25 @@
         $(this).find('form').slideToggle();
     }
 
+    function handleItemDelete(event){
+        event.preventDefault();
+        $.post($(this).attr('action'), {})
+            .done((response) => {
+                $(this).parent().remove();
+            });
+    }
     function handleItemUpdate(event) {
         event.preventDefault();
-        $.post($(this).attr('action'), $(this).serialize(), (response) => {
-            $(this).parent().replaceWith(response);
-        });
+        $.post($(this).attr('action'), $(this).serialize())
+            .done((response) => {
+                updateTotal();
+                $(this).parent().replaceWith(response);
+            })
+            .fail((xhr, status, err) => {
+                if (xhr.status == 309) {
+                    window.location.replace('/');
+                }
+            })
 
     }
 
@@ -162,9 +180,39 @@
     function fetch() {
         var items = $('#items');
         var queryString = `?month=${getMonthIndex()}&year=${getYear()}`;
-        $.get('1/items/item' + queryString, {}, (response) => {
-            items.html(response);
+
+        $('#loading').slideDown();
+        items.slideUp(() => {
+            $.get('/items' + queryString, {})
+                .done((response) => {
+                    $('#loading').slideUp();
+                    items.html(response);
+                    items.slideDown();
+                    updateTotal();
+                })
+                .fail((xhr) => {
+                    if (xhr.status == 309) {
+                        window.location.replace('/');
+                    }
+                });
         });
+
+    }
+
+    function updateTotal() {
+        console.dir('here');
+        var queryString = `?month=${getMonthIndex()}&year=${getYear()}`;
+        console.dir('yo');
+        $.get('/items/total' + queryString, {})
+            .done((response) => {
+                console.dir('hello');
+                $('#total').html(response);
+            })
+            .fail((xhr) => {
+                if (xhr.status == 309) {
+                    window.location.replace('/');
+                }
+            })
 
     }
 </script>

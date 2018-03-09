@@ -1,8 +1,11 @@
 <div class= "<%= (item.expense ? 'item expense' : "item income") %>">
     <label><%= item.name %></label>
     <%= item.value %>
-    <form  class="hidden" action=<%= '1/items/item/' + item.id %>>
+    <form  class="hidden update" action=<%= '/items/item/' + item.id %>>
         <input name="value" type="text" value=<%=item.value%> >
         <input value="Save"type="submit">
+    </form>
+    <form class="hidden delete" method="post" action=<%= '/items/item/' + item.id + '/delete'%>>
+        <input value="Delete"type="submit">
     </form>
 </div>

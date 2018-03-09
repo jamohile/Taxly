@@ -4,5 +4,5 @@
 <% sum += (items[i].expense) ? 0-val : val %>
 <% } %>
 <div id = "total" class="<%= (sum > 0) ? "income" : "expense" %>">
-    <%= sum %>
+    <%= sum.toFixed(2) %>
 </div>

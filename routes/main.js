@@ -5,7 +5,7 @@ var db = require('../utils/db');
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  res.render('auth', {failed: false});
+  res.render('auth', {failed: false, message: ""});
 });
 
 module.exports = router;

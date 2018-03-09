@@ -195,3 +195,13 @@ input[type=submit]:hover {
     background: var(--dark_semi_transparent) !important;
     color: white;
 }
+
+.failed{
+    margin: auto;
+    color: var(--red);
+    width: 64%;
+}
+#loading{
+    color: var(--semi_transparent);
+    display: none;
+}
