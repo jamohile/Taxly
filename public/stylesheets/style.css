@@ -185,6 +185,9 @@ input[type=submit] {
     width: 90%;
     font-family: Lato;
     font-weight: 900;
+    
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
 }
 
 input[type=submit]:hover {
