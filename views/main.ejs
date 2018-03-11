@@ -113,10 +113,10 @@
                 })
         });
         $('#items').on('click', '.item a', (event) => {
-           event.stopPropagation();
+            event.stopPropagation();
         });
         //Handlers for updating / deleting items.
-        $('#items').on('submit', '.item form.update', handleItemUpdate);
+        $('#items').on('click', '.item form.update input[type=submit]', handleItemUpdate);
 
         $('#items').on('submit', '.item form.delete', handleItemDelete);
 
@@ -144,11 +144,12 @@
     }
 
     function handleItemUpdate(event) {
+        var submit = $(this).attr('value');
         event.preventDefault();
-        $.post($(this).attr('action'), $(this).serialize())
+        $.post($(this).parent().attr('action'), $(this).parent().serialize() + '&submit=' + submit)
             .done((response) => {
                 updateTotal();
-                $(this).parent().replaceWith(response);
+                $(this).parent().parent().replaceWith(response);
             })
             .fail((xhr, status, err) => {
                 if (xhr.status == 309) {

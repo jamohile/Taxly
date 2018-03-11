@@ -150,15 +150,24 @@ POST to a specific item, updating item.
 router.post('/item/:itemID', (req, res) => {
     var itemID = req.params.itemID;
     var value = req.body.value;
-    console.dir(req.cookies);
-    db.getClient().query('UPDATE items SET value = $1 where id = $2', [value, itemID], (err, response) => {
+    var type = req.body.submit;
+    var query;
+    console.dir(req.body)
+
+    if(type == "Set"){
+        query = 'UPDATE items SET value = $1 where id = $2';
+    }else if(type == "Add"){
+        query = 'UPDATE items SET value = (SELECT currencyToNumeric(value) FROM items WHERE id = $2) + $1 WHERE id = $2';
+    }
+
+    db.getClient().query(query, [value, itemID], (err, response) => {
         if (!err) {
             db.getClient().query('SELECT * from items_protos WHERE id = $1', [itemID], (err, response) => {
                 if (!err) {
                     res.render('partials/item_value', {item: response.rows[0]})
                 }
             });
-            db.getClient().query('INSERT INTO item_history(type, value, item_id) VALUES($1, $2, $3)', ["SET", value, itemID], (err, response) => {
+            db.getClient().query('INSERT INTO item_history(type, value, item_id) VALUES($1, $2, $3)', [type, value, itemID], (err, response) => {
                 if (err) {
                     console.error(err);
                 }
