@@ -272,16 +272,19 @@ table{
     font-weight: 900;
     color: var(--semi_transparent);
 }
+tr{
+    height: fit-content;
+}
 td{
-    color: white;
+    height: fit-content;
+    padding: 0px;
+    color: var(--dark_semi_transparent);
     text-align: center;
     font-weight: 900;
 }
-#history{
-    height: 80%;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    left: 0px;
-    background: white;
+a.material-icons{
+    transition: all 0.2s;
+}
+a.material-icons:hover{
+    transform: scale(1.1);
 }

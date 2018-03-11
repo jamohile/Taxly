@@ -1,7 +1,10 @@
 <html>
 <%- include('partials/head', {}); %>
-<body class="<%= (item.expense ? 'expense' : "income") %>">
-<h1><%=item.name%></h1>
+<body>
+<a href="javascript:history.back()" class="no_underline inline material-icons">arrow_back</a>
+
+<%- include('partials/header', {}); %>
+<%- include('partials/item_value_static', {item: item}); %>
 <table id="history">
     <tr>
         <th>Date</th>
