@@ -63,6 +63,10 @@ app.get('/app', verify.HAS_VALID_USER, (req, res) => {
 		res.render('main', {date: date, items: response.rows});
 	});
 });
+app.get('/range', verify.HAS_VALID_USER, (req, res) => {
+	res.render('range', {});
+
+});
 app.get('/settings', verify.HAS_VALID_USER, (req, res) => {
 	var userID = req.user.id;
 	db.getClient().query('SELECT * from item_protos WHERE user_id = $1 AND "default" = true', [userID], (err, response) => {
@@ -109,7 +113,7 @@ app.post('/auth', (req, res) => {
 		});
 	}
 });
-app.post('/auth/logout', (req, res) => {
+app.get('/auth/logout', (req, res) => {
 	res.clearCookie('auth');
 	res.redirect('/');
 });

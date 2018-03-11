@@ -26,11 +26,20 @@ h1 {
 }
 
 h2 {
+    margin: 4px;
     font-family: Lato;
     font-weight: 900;
     color: gray;
     transition: all 0.2s;
     user-select: none;
+}
+h3{
+    display: inline-block;
+    font-family: Lato;
+    font-weight: 900;
+    color: var(--semi_transparent);
+    margin: 4px;
+    width: fit-content;
 }
 
 .income {
@@ -267,4 +276,12 @@ td{
     color: white;
     text-align: center;
     font-weight: 900;
+}
+#history{
+    height: 80%;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0px;
+    background: white;
 }

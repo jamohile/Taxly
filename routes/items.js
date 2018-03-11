@@ -65,6 +65,47 @@ router.get('/total', (req, res) => {
     })
 });
 
+/*
+Accepts parameters:
+from_year,
+to_year,
+from_month.
+to_month
+
+Returns items aggregated within this range.
+ */
+router.get('/range', (req, res) => {
+    var userID = req.user.id;
+    var fromYear = req.query.from_year;
+    var fromMonth = req.query.from_month;
+    var toYear = req.query.to_year;
+    var toMonth = req.query.to_month;
+
+    db.getClient().query('SELECT name, expense, sum(currencyToNumeric(value)) as value FROM items_protos WHERE user_id = $1 and id IN (SELECT getItemsForDateRange($1, $2, $3, $4, $5)) GROUP BY proto, name, expense', [userID, fromMonth, fromYear, toMonth, toYear], (err, response) => {
+        if (!err) {
+            res.render('partials/item_values_static', {items: response.rows});
+        } else {
+            console.error(err);
+            res.sendStatus(500);
+        }
+    });
+});
+router.get('/total/range', (req, res) => {
+    var userID = req.user.id;
+    var fromYear = req.query.from_year;
+    var fromMonth = req.query.from_month;
+    var toYear = req.query.to_year;
+    var toMonth = req.query.to_month;
+
+    db.getClient().query('SELECT expense, sum(currencyToNumeric(value)) as value FROM items_protos WHERE user_id = $1 and id IN (SELECT getItemsForDateRange($1, $2, $3, $4, $5)) GROUP BY proto, name, expense', [userID, fromMonth, fromYear, toMonth, toYear], (err, response) => {
+        if (!err) {
+            res.render('partials/total_monthly', {items: response.rows});
+        } else {
+            console.error(err);
+            res.sendStatus(500);
+        }
+    });
+});
 
 /*
 GET specific item, NOT A PROTOTYPE. Returns HTML.

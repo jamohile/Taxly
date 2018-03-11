@@ -1,0 +1,5 @@
+<% var url = '/items/item/' + item.id %>
+<div class="<%= (item.expense ? 'item expense' : "item income") %>">
+    <label><%= item.name %></label>
+    <%= item.value %>
+</div>

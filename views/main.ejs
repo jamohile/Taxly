@@ -5,14 +5,14 @@
 
 <body>
 <%- include('./partials/header', {}); %>
-<div id="selector_year" class="incrementable">
-    <div class="option previous"><</div>
-    <h2 id="value"><%= date.getFullYear() %></h2>
-    <div class="option next">></div>
-</div>
-<div id="selector_month" class="incrementable">
+<div class="selector_month incrementable">
     <div class="option previous"><</div>
     <h2 id="value"><%= date.toLocaleString("en-us", {month: "long"}) %></h2>
+    <div class="option next">></div>
+</div>
+<div class="selector_year incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= date.getFullYear() %></h2>
     <div class="option next">></div>
 </div>
 <div id="loading">Loading...</div>
@@ -34,6 +34,9 @@
             <input class="input_alternate" type="submit" value="Add">
         </form>
     </div>
+</div>
+<div id="history" class="hidden">
+    Hello
 </div>
 
 </body>
@@ -63,17 +66,17 @@
 
         //Handlers for changing month and year.
 
-        $('#selector_year .option.previous').click((event) => {
+        $('.selector_year .option.previous').click((event) => {
             event.stopPropagation();
             setYear(getYear() - 1);
             fetch();
         });
-        $('#selector_year .option.next').click((event) => {
+        $('.selector_year .option.next').click((event) => {
             event.stopPropagation();
             setYear(parseInt(getYear()) + 1);
             fetch();
         });
-        $('#selector_month .option.previous').click((event) => {
+        $('.selector_month .option.previous').click((event) => {
             event.stopPropagation();
             var monthIndex = parseInt(getMonthIndex()) - 1;
             //handle wrap
@@ -83,7 +86,7 @@
             setMonthByIndex(monthIndex);
             fetch();
         });
-        $('#selector_month .option.next').click((event) => {
+        $('.selector_month .option.next').click((event) => {
             event.stopPropagation();
             var monthIndex = parseInt(getMonthIndex()) + 1;
             //handle wrap
@@ -160,11 +163,11 @@
     }
 
     function getMonth() {
-        return $('#selector_month #value').text();
+        return $('.selector_month #value').text();
     }
 
     function getYear() {
-        return $('#selector_year #value').text();
+        return $('.selector_year #value').text();
     }
 
     function setMonthByIndex(monthIndex) {
@@ -172,11 +175,11 @@
     }
 
     function setMonth(month) {
-        $('#selector_month #value').text(month)
+        $('.selector_month #value').text(month)
     }
 
     function setYear(year) {
-        $('#selector_year #value').text(year)
+        $('.selector_year #value').text(year)
     }
 
     //Use the set month and year to get data from server, set.
@@ -203,12 +206,13 @@
     }
 
     function updateTotal() {
+        $('#total').slideUp();
         console.dir('here');
         var queryString = `?month=${getMonthIndex()}&year=${getYear()}`;
         console.dir('yo');
         $.get('/items/total' + queryString, {})
             .done((response) => {
-                console.dir('hello');
+                $('#total').slideDown();
                 $('#total').html(response);
             })
             .fail((xhr) => {

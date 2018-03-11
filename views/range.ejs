@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<%- include('./partials/head', {}); %>
+
+<body>
+<%- include('./partials/header', {}); %>
+<h3>From</h3>
+<div class="selector_month from incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= new Date().toLocaleString("en-us", {month: "long"}) %></h2>
+    <div class="option next">></div>
+</div>
+<div class="selector_year from incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= new Date().getFullYear() %></h2>
+    <div class="option next">></div>
+</div>
+<h3>To</h3>
+<div class="selector_month to incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= new Date().toLocaleString("en-us", {month: "long"}) %></h2>
+    <div class="option next">></div>
+</div>
+
+<div class="selector_year to incrementable">
+    <div class="option previous"><</div>
+    <h2 id="value"><%= new Date().getFullYear() %></h2>
+    <div class="option next">></div>
+</div>
+<div id="loading">Loading...</div>
+<div id="items">
+</div>
+
+<%- include('./partials/total_monthly', {items: []}); %>
+</body>
+</html>
+
+<script>
+    $().ready(() => {
+        /*
+        Set starting date and fetch.
+         */
+
+        var date = new Date();
+        var nextDate = new Date();
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        setFromMonthByIndex(date.getMonth());
+        setToMonthByIndex(nextDate.getMonth())
+        setFromYear(date.getFullYear());
+        setToYear(nextDate.getFullYear());
+        fetch();
+
+        $('#button_add').click((event) => {
+            event.stopPropagation();
+            $('#bottom-menu_add_item').slideToggle();
+        });
+        $('#bottom-menu_add_item').click((event) => {
+            event.stopPropagation();
+        });
+        $('body').click(() => {
+            $('#bottom-menu_add_item').slideUp();
+        });
+
+        //Handlers for changing month and year.
+
+        $('.selector_year.from .option.previous').click((event) => {
+            event.stopPropagation();
+            setFromYear(getFromYear() - 1);
+            fetch();
+        });
+        $('.selector_year.to .option.previous').click((event) => {
+            event.stopPropagation();
+            setToYear(getToYear() - 1)
+            fetch();
+        });
+
+        $('.selector_year.from .option.next').click((event) => {
+            event.stopPropagation();
+            setFromYear(parseInt(getFromYear()) + 1);
+            fetch();
+        });
+        $('.selector_year.to .option.next').click((event) => {
+            event.stopPropagation();
+            setToYear(parseInt(getToYear()) + 1)
+            fetch();
+        });
+
+        $('.selector_month.from .option.previous').click((event) => {
+            event.stopPropagation();
+            var monthIndex;
+            monthIndex = parseInt(getFromMonthIndex()) - 1;
+            //handle wrap
+            if (monthIndex < 0) {
+                monthIndex = 11;
+            }
+            setFromMonthByIndex(monthIndex)
+            fetch();
+        });
+        $('.selector_month.to .option.previous').click((event) => {
+            event.stopPropagation();
+            var monthIndex;
+            monthIndex = parseInt(getToMonthIndex()) - 1;
+            //handle wrap
+            if (monthIndex < 0) {
+                monthIndex = 11;
+            }
+                setToMonthByIndex(monthIndex)
+                fetch();
+        });
+
+        $('.selector_month.to .option.next').click((event) => {
+            event.stopPropagation();
+            var monthIndex;
+            monthIndex = parseInt(getToMonthIndex()) + 1;
+            //handle wrap
+            if (monthIndex > 11) {
+                monthIndex = 0;
+            }
+            setToMonthByIndex(monthIndex);
+            fetch();
+        });
+        $('.selector_month.from .option.next').click((event) => {
+            event.stopPropagation();
+            var monthIndex;
+            monthIndex = parseInt(getFromMonthIndex()) + 1;
+            //handle wrap
+            if (monthIndex > 11) {
+                monthIndex = 0;
+            }
+            setFromMonthByIndex(monthIndex);
+            fetch();
+        });
+
+
+        //Handlers for adding a new item.
+        $('#form_add_item').submit((event) => {
+            event.preventDefault();
+            var queryString = `?month=${getMonthIndex()}&year=${getYear()}`
+            $.post('items' + queryString, $('#form_add_item').serialize())
+                .then((response) => {
+                    $('#items').append(response);
+                    $('#bottom-menu_add_item').slideUp();
+                })
+                .fail((xhr) => {
+                    if (xhr.status == 309) {
+                        window.location.replace('/');
+                    }
+                })
+        });
+    })
+    ;
+
+    function getFromMonthIndex() {
+        return MONTHS.indexOf(getFromMonth());
+    }
+
+    function getToMonthIndex() {
+        return MONTHS.indexOf(getToMonth());
+    }
+
+    function getFromMonth() {
+        return $('.selector_month.from #value').text();
+    }
+
+    function getToMonth() {
+        return $('.selector_month.to #value').text();
+    }
+
+    function getFromYear() {
+        return $('.selector_year.from #value').text();
+    }
+
+    function getToYear() {
+        return $('.selector_year.to #value').text();
+    }
+
+    function setFromMonthByIndex(monthIndex) {
+        setFromMonth(MONTHS[monthIndex]);
+    }
+
+    function setFromMonth(month) {
+        $('.selector_month.from #value').text(month)
+    }
+
+    function setToMonthByIndex(monthIndex) {
+        setToMonth(MONTHS[monthIndex]);
+    }
+
+    function setToMonth(month) {
+        $('.selector_month.to #value').text(month)
+    }
+
+    function setFromYear(year) {
+        $('.selector_year.from #value').text(year)
+    }
+
+    function setToYear(year) {
+        $('.selector_year.to #value').text(year)
+    }
+
+    //Use the set month and year to get data from server, set.
+    function fetch() {
+        var items = $('#items');
+        var queryString = getQueryString();
+
+        $('#loading').slideDown();
+        items.slideUp(() => {
+            $.get('/items/range' + queryString, {})
+                .done((response) => {
+                    $('#loading').slideUp();
+                    items.html(response);
+                    items.slideDown();
+                    updateTotal();
+                })
+                .fail((xhr) => {
+                    if (xhr.status == 309) {
+                        window.location.replace('/');
+                    }
+                });
+        });
+
+    }
+
+    function updateTotal() {
+        $('#total').slideUp();
+        var queryString = getQueryString()
+        $.get('/items/total/range' + queryString, {})
+            .done((response) => {
+                $('#total').html(response);
+                $('#total').slideDown();
+            })
+            .fail((xhr) => {
+                if (xhr.status == 309) {
+                    window.location.replace('/');
+                }
+            })
+
+    }
+
+    function getQueryString() {
+        return `?from_month=${getFromMonthIndex()}&from_year=${getFromYear()}&to_month=${getToMonthIndex()}&to_year=${getToYear()}`;
+    }
+</script>
