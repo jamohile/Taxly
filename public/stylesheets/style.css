@@ -4,10 +4,12 @@
     --blue: #00A6FF;
     --semi_transparent: rgba(20, 20, 20, 0.2);
     --dark_semi_transparent: rgba(20, 20, 20, 0.6);
+    --header-height: 48px;
 }
 
 body {
-    padding: 50px;
+    margin-top: var(--header-height);
+    padding: 16px;
     font: 16px "Lato", Helvetica, Arial, sans-serif;
     font-weight: 900;
     color: white;
@@ -249,10 +251,22 @@ input[type=submit]:hover {
     text-decoration: none;
 }
 header{
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: fixed;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
+    color: white;
+    background: var(--blue);
+    height: var(--header-height);
+    box-shadow: 0px 2px 1px var(--semi_transparent);
 }
+header h1, header a{
+    color: white;
+}
+
 ::placeholder{
     opacity: 1;
     color: var(--semi_transparent);

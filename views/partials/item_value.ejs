@@ -4,9 +4,9 @@
     <label><%= item.name %></label>
     <%= item.value %>
     <form class="hidden update" action=<%= url %>>
-        <input name="value" type="text">
-        <input name="submit" value="Set" type="submit">
-        <input name="type" value="Add" type="submit">
+        <input name="value" type="text" autocomplete="off">
+        <input name="submit" value="Set" type="submit" autocomplete="off">
+        <input name="type" value="Add" type="submit" autocomplete="off">
     </form>
     <form class="hidden delete" method="post" action=<%= '/items/item/' + item.id + '/delete' %>>
         <input value="Delete" type="submit">
